@@ -1,0 +1,5 @@
+*** Checking Excel form conformity ***
+Excel file found: task_2024-06-14_HSG.xlsx
+Version of Excel form supported: v1.0
+5 barcodes loaded from file.
+Excel file seems to be conform

@@ -1,0 +1,7 @@
+paramiko
+python-dotenv
+almapiwrapper
+pandas
+openpyxl
+lxml
+requests
