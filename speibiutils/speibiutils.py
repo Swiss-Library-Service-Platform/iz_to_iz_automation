@@ -109,7 +109,7 @@ class Task:
         if remote_path is not None:
             self.remote_path = remote_path
         elif directory is not None and account is not None:
-            self.remote_path = f'{account}/upload/storage_tasks/{directory}'
+            self.remote_path = f'{account}/download/storage_tasks/{directory}'
 
     @staticmethod
     def get_name_from_dir(directory: str) -> Optional[str]:
@@ -167,7 +167,7 @@ class Task:
             True if the task is valid, False otherwise
         """
 
-        m = re.match(r'^(sbk\w+)/upload/storage_tasks/task_\d{4}-\d{2}-\d{2}_.*_([A-Z]+)_([A-Z]+)$',
+        m = re.match(r'^(sbk\w+)/download/storage_tasks/task_\d{4}-\d{2}-\d{2}_.*_([A-Z]+)_([A-Z]+)$',
                      self.remote_path)
         if m is None:
             return False
@@ -188,7 +188,7 @@ class Task:
         if self.is_valid() is False:
             return None
 
-        m = re.match(r'^sbk\w+/upload/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*)_[A-Z]+_[A-Z]+$',
+        m = re.match(r'^sbk\w+/download/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*_[A-Z]+)_[A-Z]+$',
                      self.remote_path)
 
         return m.group(1)
@@ -204,7 +204,7 @@ class Task:
         if self.is_valid() is False:
             return None
 
-        m = re.match(r'^sbk\w+/upload/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*_[A-Z]+_[A-Z]+)$',
+        m = re.match(r'^sbk\w+/download/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*_[A-Z]+_[A-Z]+)$',
                      self.remote_path)
 
         return m.group(1)
@@ -225,7 +225,7 @@ class Task:
         if self.is_valid() is False:
             return None
 
-        m = re.match(r'^sbk\w+/upload/storage_tasks/task_\d{4}-\d{2}-\d{2}_.*_[A-Z]+_[A-Z]+$',
+        m = re.match(r'^sbk\w+/download/storage_tasks/task_\d{4}-\d{2}-\d{2}_.*_[A-Z]+_[A-Z]+$',
                      self.remote_path)
         return f'data/{m.group(0)}' if local is True else m.group(0)
 
@@ -303,7 +303,7 @@ class Task:
         if self.is_valid() is False:
             return None
 
-        m = re.match(r'^(sbk\w+)/upload/storage_tasks/task_(\d{4}-\d{2}-\d{2})_.*_([A-Z]+)_([A-Z]+)$',
+        m = re.match(r'^(sbk\w+)/download/storage_tasks/task_(\d{4}-\d{2}-\d{2})_.*_([A-Z]+)_([A-Z]+)$',
                      self.remote_path)
 
         if m is None:
@@ -624,7 +624,6 @@ class TaskSummary:
         self.save()
         return new_task
 
-
     @staticmethod
     def update_task_name_state(task_directory: str, new_state: str) -> Optional[str]:
         """Update the state of a task name
@@ -633,7 +632,7 @@ class TaskSummary:
         ----------
         task_directory : str
             Task directory name
-        state : str
+        new_state : str
             New state of the task
 
         Returns
@@ -708,7 +707,7 @@ class TaskSummary:
         self.tasks.to_excel('./data/task_summary.xlsx', index=False)
         for directory in SBK_DIR:
             sftp.put('./data/task_summary.xlsx',
-                     f'./{directory}/upload/storage_tasks/task_summary.xlsx')
+                     f'./{directory}/download/storage_tasks/task_summary.xlsx')
 
     @staticmethod
     def clean_local_directories() -> None:
@@ -722,7 +721,7 @@ class TaskSummary:
         """
 
         for account in SBK_DIR:
-            for directory in os.listdir(f'./data/{account}/upload/storage_tasks'):
+            for directory in os.listdir(f'./data/{account}/download/storage_tasks'):
                 temp_task = Task(directory=directory, account=account)
                 if (date.today() - temp_task.get_scheduled_date()).days > MAX_DAYS_RETENTION:
                     shutil.rmtree(temp_task.get_directory_path(local=True))
@@ -768,6 +767,8 @@ class TaskSummary:
                 logging.error(f'{task.get_directory()}: workflow broken, same task name already exists')
                 sftp.rmtree(entry_path)
                 continue
+
+        self.save()
 
         # 2nd run to update the task summary
         remote = RemoteLocation()
@@ -926,6 +927,121 @@ class TaskSummary:
         return next_task
 
 
+class NewTask:
+    def __init__(self, form_path: str) -> None:
+        self.form_path = form_path
+        self.error = self.is_valid_form_path(form_path) is False
+
+        if self.form_path.endswith('DELETE.xlsx') is True:
+            self.delete_task()
+        elif self.form_path.endswith('RESTART.xlsx') is True:
+            self.restart_task()
+        elif self.error is False:
+            self.create_new_task()
+
+    @staticmethod
+    def is_valid_form_path(form_path: str) -> bool:
+        """Check if a task name is valid
+
+        Parameters
+        ----------
+        form_path : str
+            Task name
+
+        Returns
+        -------
+        bool
+            True if the task name is valid, False otherwise
+        """
+        m = re.match(r'^sbk\w+/upload/task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx$',
+                     form_path)
+        if m is None:
+            return False
+
+        return True
+
+    def get_directory(self) -> str:
+        """Get the directory of a task
+
+        Returns
+        -------
+        str
+            Directory of the task
+        """
+        m = re.match(r'^(sbk\w+)/upload/task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx$',
+                     self.form_path)
+
+        return m.group(1)
+
+    def get_form_name(self) -> Optional[str]:
+        """Get the form file name of a Excel form
+
+        Returns
+        -------
+        str
+            Name of the form file
+        """
+        m = re.match(r'^sbk\w+/upload/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx)$',
+                     self.form_path)
+
+        return m.group(1)
+
+    def get_task_name(self, state: Optional[str] = None) -> str:
+        """Get the name of a task
+        """
+
+        m = re.match(r'^sbk\w+/upload/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE))(?:_DELETE|_RESTART)?\.xlsx$',
+                     self.form_path)
+        if state is None:
+            return m.group(1)
+        else:
+            return f'{m.group(1)}_{state}'
+
+    @sftp_connect
+    def delete_task(self, sftp: sftpmodule.SFTP) -> None:
+        """Delete a task
+        """
+        for directory in sftp.listdir(f'{self.get_directory()}/download/storage_tasks/'):
+            if directory in [self.get_task_name(state='NEW'), self.get_task_name(state='READY')]:
+                sftp.rmtree(f'{self.get_directory()}/download/storage_tasks/{directory}')
+                sftp.remove(self.form_path)
+                logging.info(f'{self.get_task_name()} deleted')
+                return
+
+    @sftp_connect
+    def restart_task(self, sftp: sftpmodule.SFTP) -> None:
+        """Delete a task
+        """
+        m = re.match(r'^sbk\w+/upload/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*_(?:SMALL|LARGE))_RESTART?\.xlsx$',
+                     self.form_path)
+        if m is None:
+            logging.error(f'{self.form_path}: Invalid form name')
+            return
+        current_task_dir = f'{self.get_directory()}/download/storage_tasks/task_{m.group(1)}{m.group(3)}_DONE'
+        new_task_dir = f'{self.get_directory()}/download/storage_tasks/task_{m.group(2)}{m.group(3)}_NEW'
+        if sftp.is_dir(current_task_dir) is True:
+            sftp.rename(current_task_dir, new_task_dir)
+            sftp.remove(self.form_path)
+            logging.info(f'{self.get_task_name(state="NEW")} restarted')
+        else:
+            logging.error(f'{self.form_path}: Task not found')
+
+    @sftp_connect
+    def create_new_task(self, sftp: sftpmodule.SFTP) -> None:
+        """Create a new task
+        """
+        for directory in sftp.listdir(f'{self.get_directory()}/download/storage_tasks/'):
+            if self.get_task_name() in directory:
+                logging.error(f'{self.get_task_name()} already exists')
+                return
+
+        sftp.mkdir(f'{self.get_directory()}/download/storage_tasks/{self.get_task_name(state="NEW")}')
+
+        sftp.rename(self.form_path,
+                    f'{self.get_directory()}/download/storage_tasks/'
+                    f'{self.get_task_name(state="NEW")}/{self.get_form_name()}')
+
+
 class RemoteLocation:
     """Remote location class to list the remote directories
 
@@ -962,22 +1078,33 @@ class RemoteLocation:
         """
         remote_directories = []
         for account_directory in SBK_DIR:
-            if sftp.is_dir(f'./{account_directory}/upload/storage_tasks') is False:
-                logging.warning(f'Creating directory {account_directory}/upload/storage_tasks')
-                sftp.mkdir(f'./{account_directory}/upload/storage_tasks')
+            if sftp.is_dir(f'./{account_directory}/download/storage_tasks') is False:
+                logging.warning(f'Creating directory {account_directory}/download/storage_tasks')
+                sftp.mkdir(f'./{account_directory}/download/storage_tasks')
 
-            for entry in sftp.listdir(f'./{account_directory}/upload/storage_tasks'):
-                if sftp.is_dir(f'./{account_directory}/upload/storage_tasks/{entry}') is True:
-                    remote_directories += [f'{account_directory}/upload/storage_tasks/{entry}']
+            for entry in sftp.listdir(f'./{account_directory}/download/storage_tasks'):
+                if sftp.is_dir(f'./{account_directory}/download/storage_tasks/{entry}') is True:
+                    remote_directories += [f'{account_directory}/download/storage_tasks/{entry}']
 
         return remote_directories
+
+    @sftp_connect
+    def get_new_tasks(self, sftp: sftpmodule.SFTP) -> List[str]:
+        """Get the new forms
+
+        Returns
+        -------
+        List[str]
+            List of new forms
+        """
+        new_tasks = []
+        for account_directory in SBK_DIR:
+            for entry in sftp.listdir(f'./{account_directory}/upload'):
+                if NewTask.is_valid_form_path(f'{account_directory}/upload/{entry}'):
+                    new_tasks.append(f'{account_directory}/upload/{entry}')
+
+        return new_tasks
 
 
 if __name__ == '__main__':
     pass
-    # dotenv.load_dotenv()
-    # os.chdir('../')
-    # create_directories()
-    # log = LogFile()
-    # task_workflow_new_to_ready()
-    # log.close_log()

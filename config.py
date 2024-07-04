@@ -10,7 +10,7 @@ MAX_BARCODES_SMALL = 30
 MAX_DAYS_RETENTION = 30
 
 # task hour for large task
-LARGE_TASK_HOUR = 18
+LARGE_TASK_HOUR = 26
 
 # list of directories to be processed (account column in task_summary.xlsx file)
 SBK_DIR = ['sbkuzh', 'sbkzbz', 'sbkzhk', 'sbkubs', 'sbkrzs', 'sbkhsg', 'sbkzbs']

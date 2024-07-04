@@ -1,0 +1,6 @@
+Barcode,NZ_mms_id,MMS_id_s,Holding_id_s,Item_id_s,MMS_id_d,Holding_id_d,Item_id_d,Process,Copied,Error
+A1001180332,,,,,,,,,True,Item in the destination IZ and barcode of source record already updated
+A1001180331,,,,,,,,,True,Item in the destination IZ and barcode of source record already updated
+DSV0319573,,,,,,,,,True,Item in the destination IZ and barcode of source record already updated
+DSV031957311,,,,,,,,,False,Error by fetching source item
+12223132131-test,,,,,,,,,False,Error by fetching source item
