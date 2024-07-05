@@ -1012,7 +1012,7 @@ class NewTask:
     def restart_task(self, sftp: sftpmodule.SFTP) -> None:
         """Delete a task
         """
-        m = re.match(r'^sbk\w+/upload/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*)_(SMALL|LARGE)_RESTART?\.xlsx$',
+        m = re.match(r'^sbk\w+/upload/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*)_(SMALL|LARGE)_RESTART\.xlsx$',
                      self.form_path)
         if m is None:
             logging.error(f'{self.form_path}: Invalid form name')
