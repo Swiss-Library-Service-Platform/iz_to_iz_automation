@@ -306,25 +306,31 @@ class Test_speibiutils(unittest.TestCase):
 
     def test_new_task_2(self):
         sftp.put('./test_data/test_data.xlsx',
-                 f'./sbkzbz/upload/task_{date.today().isoformat()}_ZBZ_SMALL.xlsx')
-        self.assertTrue(sftp.is_file(f'./sbkzbz/upload/task_{date.today().isoformat()}_ZBZ_SMALL.xlsx'),
+                 f'./sbkzbz/upload/task_{date.today().isoformat()}_ZBZ_LARGE.xlsx')
+        self.assertTrue(sftp.is_file(f'./sbkzbz/upload/task_{date.today().isoformat()}_ZBZ_LARGE.xlsx'),
                         'Task file should be uploaded')
 
         new_tasks = speibi.RemoteLocation().get_new_tasks()
         for new_task_path in new_tasks:
             speibi.NewTask(new_task_path)
 
-        workflow.start('SMALL')
+        workflow.start('LARGE')
 
-        self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{date.today().isoformat()}_ZBZ_SMALL_DONE'),
+        self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{date.today().isoformat()}_ZBZ_LARGE_DONE'),
                         'Task should be done')
 
         sftp.put('./test_data/test_data.xlsx',
-                 f'./sbkzbz/upload/task_{date.today().isoformat()}_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_SMALL_RESTART.xlsx')
+                 f'./sbkzbz/upload/task_{date.today().isoformat()}_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_LARGE_RESTART.xlsx')
 
         new_tasks = speibi.RemoteLocation().get_new_tasks()
         for new_task_path in new_tasks:
             speibi.NewTask(new_task_path)
+
+        self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_SMALL_NEW'),
+                        'Task should be new')
+        workflow.start('SMAll')
+        self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_SMALL_READY'),
+                        'Task should be ready')
 
 
     @classmethod

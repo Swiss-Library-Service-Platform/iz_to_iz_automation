@@ -1012,17 +1012,29 @@ class NewTask:
     def restart_task(self, sftp: sftpmodule.SFTP) -> None:
         """Delete a task
         """
-        m = re.match(r'^sbk\w+/upload/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*_(?:SMALL|LARGE))_RESTART?\.xlsx$',
+        m = re.match(r'^sbk\w+/upload/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*)_(SMALL|LARGE)_RESTART?\.xlsx$',
                      self.form_path)
         if m is None:
             logging.error(f'{self.form_path}: Invalid form name')
             return
-        current_task_dir = f'{self.get_directory()}/download/storage_tasks/task_{m.group(1)}{m.group(3)}_DONE'
-        new_task_dir = f'{self.get_directory()}/download/storage_tasks/task_{m.group(2)}{m.group(3)}_NEW'
+        current_task_dir = f'{self.get_directory()}/download/storage_tasks/task_{m.group(1)}{m.group(3)}_{m.group(4)}_DONE'
+        new_task_dir = f'{self.get_directory()}/download/storage_tasks/task_{m.group(2)}{m.group(3)}_SMALL_NEW'
+
         if sftp.is_dir(current_task_dir) is True:
             sftp.rename(current_task_dir, new_task_dir)
+            for f in sftp.listdir(new_task_dir):
+                if f.endswith('_LARGE.xlsx'):
+                    sftp.rename(f'{new_task_dir}/{f}',
+                                f'{new_task_dir}/task_{m.group(2)}{m.group(3)}_SMALL.xlsx')
+                elif f.endswith('_LARGE_items_processing.csv'):
+                    sftp.rename(f'{new_task_dir}/{f}',
+                                f'{new_task_dir}/task_{m.group(2)}{m.group(3)}_SMALL_items_processing.csv')
+                elif f.endswith('LARGE_items_not_copied.csv'):
+                    sftp.rename(f'{new_task_dir}/{f}',
+                                f'{new_task_dir}/task_{m.group(2)}{m.group(3)}_SMALL_items_not_copied.csv')
             sftp.remove(self.form_path)
             logging.info(f'{self.get_task_name(state="NEW")} restarted')
+
         else:
             logging.error(f'{self.form_path}: Task not found')
 
