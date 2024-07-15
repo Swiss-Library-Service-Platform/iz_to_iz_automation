@@ -723,8 +723,13 @@ class TaskSummary:
         for account in SBK_DIR:
             if os.path.isdir(f'./data/{account}') is False:
                 os.mkdir(f'./data/{account}')
+            if os.path.isdir(f'./data/{account}/download') is False:
                 os.mkdir(f'./data/{account}/download')
+            if os.path.isdir(f'./data/{account}/download/storage_tasks') is False:
                 os.mkdir(f'./data/{account}/download/storage_tasks')
+            if os.path.isdir(f'./data/{account}/upload/') is False:
+                os.mkdir(f'./data/{account}/upload/')
+
             for directory in os.listdir(f'./data/{account}/download/storage_tasks'):
                 temp_task = Task(directory=directory, account=account)
                 if (date.today() - temp_task.get_scheduled_date()).days > MAX_DAYS_RETENTION:
@@ -789,7 +794,7 @@ class TaskSummary:
 
             task_parameters = task.get_parameters()
 
-            # Ony new tasks can be added to the task summary
+            # Only new tasks can be added to the task summary
             if task_parameters['State'] != 'NEW':
                 error_message = (f'{task.get_directory()}: workflow broken, new tasks must have '
                                  f'"NEW" state and not "{task_parameters["State"]}"')

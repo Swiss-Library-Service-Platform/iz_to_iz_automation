@@ -26,6 +26,10 @@ def start(size: str) -> None:
     None
     """
     speibi.LogFile()
+    new_tasks = speibi.RemoteLocation().get_new_tasks()
+    for new_task_path in new_tasks:
+        new_task = speibi.NewTask(new_task_path)
+
     task_workflow_new_to_ready()
     task_summary = speibi.TaskSummary()
     if task_summary.get_processing_task() is not None:
