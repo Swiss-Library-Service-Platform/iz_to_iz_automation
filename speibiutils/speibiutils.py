@@ -721,6 +721,10 @@ class TaskSummary:
         """
 
         for account in SBK_DIR:
+            if os.path.isdir(f'./data/{account}') is False:
+                os.mkdir(f'./data/{account}')
+                os.mkdir(f'./data/{account}/download')
+                os.mkdir(f'./data/{account}/download/storage_tasks')
             for directory in os.listdir(f'./data/{account}/download/storage_tasks'):
                 temp_task = Task(directory=directory, account=account)
                 if (date.today() - temp_task.get_scheduled_date()).days > MAX_DAYS_RETENTION:
