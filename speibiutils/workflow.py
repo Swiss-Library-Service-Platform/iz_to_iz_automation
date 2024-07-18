@@ -13,7 +13,6 @@ def task_workflow_new_to_ready() -> None:
     """
     task_summary = speibi.TaskSummary()
     task_summary.clean_remote_directories()
-    task_summary.clean_local_directories()
     task_summary.check_forms_conformity()
     task_summary.save()
 
@@ -26,6 +25,7 @@ def start(size: str) -> None:
     None
     """
     speibi.LogFile()
+    speibi.TaskSummary.clean_local_directories()
     new_tasks = speibi.RemoteLocation().get_new_tasks()
     for new_task_path in new_tasks:
         new_task = speibi.NewTask(new_task_path)

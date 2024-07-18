@@ -7,6 +7,10 @@
 # python start_process.py -size LARGE
 
 import sys
+import os
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 from speibiutils.workflow import start
+
 if sys.argv[1] == '-size' and sys.argv[2] in ['SMALL', 'LARGE']:
     start(size=sys.argv[2])
