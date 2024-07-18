@@ -770,9 +770,9 @@ class TaskSummary:
                 sftp.rmtree(entry_path)
                 continue
 
-            # No same task name is allowed
+            # No same task name is allowed, task in ERROR state can be overwritten and are ignored
             if (task.get_name() in
-                    self.tasks['Directory'].apply(task.get_name_from_dir).values):
+                    self.tasks.loc[self.tasks['State'] != 'ERROR']['Directory'].apply(task.get_name_from_dir).values):
                 logging.error(f'{task.get_directory()}: workflow broken, same task name already exists')
                 sftp.rmtree(entry_path)
                 continue
@@ -795,7 +795,7 @@ class TaskSummary:
             task_parameters = task.get_parameters()
 
             # Only new tasks can be added to the task summary
-            if task_parameters['State'] != 'NEW':
+            if task_parameters['State'] not in ['NEW', 'ERROR']:
                 error_message = (f'{task.get_directory()}: workflow broken, new tasks must have '
                                  f'"NEW" state and not "{task_parameters["State"]}"')
                 logging.error(error_message)
