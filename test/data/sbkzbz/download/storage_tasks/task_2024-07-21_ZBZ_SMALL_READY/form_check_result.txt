@@ -1,5 +1,5 @@
 *** Checking Excel form conformity ***
-Excel file found: task_2024-07-20_ZBZ_SMALL.xlsx
+Excel file found: task_2024-07-21_ZBZ_SMALL.xlsx
 Version of Excel form supported: v1.0
 2 barcodes loaded from file.
 Excel file seems to be conform

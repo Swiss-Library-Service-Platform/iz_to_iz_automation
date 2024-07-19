@@ -729,6 +729,8 @@ class TaskSummary:
                 os.mkdir(f'./data/{account}/download/storage_tasks')
             if os.path.isdir(f'./data/{account}/upload/') is False:
                 os.mkdir(f'./data/{account}/upload/')
+            if os.path.isdir(f'./data/{account}/upload/storage_tasks') is False:
+                os.mkdir(f'./data/{account}/upload/storage_tasks')
 
             for directory in os.listdir(f'./data/{account}/download/storage_tasks'):
                 temp_task = Task(directory=directory, account=account)
@@ -962,7 +964,7 @@ class NewTask:
         bool
             True if the task name is valid, False otherwise
         """
-        m = re.match(r'^sbk\w+/upload/task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx$',
+        m = re.match(r'^sbk\w+/upload/storage_tasks/task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx$',
                      form_path)
         if m is None:
             return False
@@ -977,7 +979,7 @@ class NewTask:
         str
             Directory of the task
         """
-        m = re.match(r'^(sbk\w+)/upload/task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx$',
+        m = re.match(r'^(sbk\w+)/upload/storage_tasks/task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx$',
                      self.form_path)
 
         return m.group(1)
@@ -990,7 +992,7 @@ class NewTask:
         str
             Name of the form file
         """
-        m = re.match(r'^sbk\w+/upload/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx)$',
+        m = re.match(r'^sbk\w+/upload/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE)(?:_DELETE|_RESTART)?\.xlsx)$',
                      self.form_path)
 
         return m.group(1)
@@ -999,7 +1001,7 @@ class NewTask:
         """Get the name of a task
         """
 
-        m = re.match(r'^sbk\w+/upload/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE))(?:_DELETE|_RESTART)?\.xlsx$',
+        m = re.match(r'^sbk\w+/upload/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE))(?:_DELETE|_RESTART)?\.xlsx$',
                      self.form_path)
         if state is None:
             return m.group(1)
@@ -1021,7 +1023,7 @@ class NewTask:
     def restart_task(self, sftp: sftpmodule.SFTP) -> None:
         """Delete a task
         """
-        m = re.match(r'^sbk\w+/upload/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*)_(SMALL|LARGE)_RESTART\.xlsx$',
+        m = re.match(r'^sbk\w+/upload/storage_tasks/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*)_(SMALL|LARGE)_RESTART\.xlsx$',
                      self.form_path)
         if m is None:
             logging.error(f'{self.form_path}: Invalid form name')
@@ -1120,9 +1122,11 @@ class RemoteLocation:
         """
         new_tasks = []
         for account_directory in SBK_DIR:
-            for entry in sftp.listdir(f'./{account_directory}/upload'):
-                if NewTask.is_valid_form_path(f'{account_directory}/upload/{entry}'):
-                    new_tasks.append(f'{account_directory}/upload/{entry}')
+            if sftp.is_dir(f'./{account_directory}/upload/storage_tasks') is False:
+                sftp.mkdir(f'./{account_directory}/upload/storage_tasks')
+            for entry in sftp.listdir(f'./{account_directory}/upload/storage_tasks'):
+                if NewTask.is_valid_form_path(f'{account_directory}/upload/storage_tasks/{entry}'):
+                    new_tasks.append(f'{account_directory}/upload/storage_tasks/{entry}')
 
         return new_tasks
 

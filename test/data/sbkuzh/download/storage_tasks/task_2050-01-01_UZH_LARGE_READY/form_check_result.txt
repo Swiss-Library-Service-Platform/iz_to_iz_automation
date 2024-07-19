@@ -1,5 +1,0 @@
-*** Checking Excel form conformity ***
-Excel file found: task_2050-01-01_UZH_LARGE.xlsx
-Version of Excel form supported: v1.0
-5 barcodes loaded from file.
-Excel file seems to be conform

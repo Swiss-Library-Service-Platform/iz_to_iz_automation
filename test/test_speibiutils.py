@@ -42,6 +42,7 @@ class Test_speibiutils(unittest.TestCase):
             sftp.mkdir(f'./{directory}')
             sftp.mkdir(f'./{directory}/download')
             sftp.mkdir(f'./{directory}/upload')
+            sftp.mkdir(f'./{directory}/upload/storage_tasks')
             sftp.mkdir(f'./{directory}/download/storage_tasks')
 
     def test_get_remote_directories(self):
@@ -275,8 +276,8 @@ class Test_speibiutils(unittest.TestCase):
 
     def test_new_task_1(self):
         sftp.put('./test_data/test_data.xlsx',
-                 f'./sbkzhk/upload/task_{date.today().isoformat()}_ZHK_SMALL.xlsx')
-        self.assertTrue(sftp.is_file(f'./sbkzhk/upload/task_{date.today().isoformat()}_ZHK_SMALL.xlsx'),
+                 f'./sbkzhk/upload/storage_tasks/task_{date.today().isoformat()}_ZHK_SMALL.xlsx')
+        self.assertTrue(sftp.is_file(f'./sbkzhk/upload/storage_tasks/task_{date.today().isoformat()}_ZHK_SMALL.xlsx'),
                         'Task file should be uploaded')
 
         new_tasks = speibi.RemoteLocation().get_new_tasks()
@@ -291,14 +292,14 @@ class Test_speibiutils(unittest.TestCase):
                         'Task file should be uploaded')
 
         sftp.put('./test_data/test_data.xlsx',
-                 f'./sbkzhk/upload/task_{date.today().isoformat()}_ZHK_SMALL_DELETE.xlsx')
+                 f'./sbkzhk/upload/storage_tasks/task_{date.today().isoformat()}_ZHK_SMALL_DELETE.xlsx')
 
         new_tasks = speibi.RemoteLocation().get_new_tasks()
 
         for new_task_path in new_tasks:
             new_task = speibi.NewTask(new_task_path)
 
-        self.assertFalse(sftp.is_file(f'./sbkzhk/upload/task_{date.today().isoformat()}_ZHK_SMALL_DELETE.xlsx'),
+        self.assertFalse(sftp.is_file(f'./sbkzhk/upload/storage_tasks/task_{date.today().isoformat()}_ZHK_SMALL_DELETE.xlsx'),
                          'Task source file should be deleted after task deletion')
 
         self.assertFalse(sftp.is_file(f'./sbkzhk/download/storage_tasks/task_{date.today().isoformat()}_ZHK_SMALL_NEW/task_{date.today().isoformat()}_ZHK_SMALL.xlsx'),
@@ -306,8 +307,8 @@ class Test_speibiutils(unittest.TestCase):
 
     def test_new_task_2(self):
         sftp.put('./test_data/test_data.xlsx',
-                 f'./sbkzbz/upload/task_{date.today().isoformat()}_ZBZ_LARGE.xlsx')
-        self.assertTrue(sftp.is_file(f'./sbkzbz/upload/task_{date.today().isoformat()}_ZBZ_LARGE.xlsx'),
+                 f'./sbkzbz/upload/storage_tasks/task_{date.today().isoformat()}_ZBZ_LARGE.xlsx')
+        self.assertTrue(sftp.is_file(f'./sbkzbz/upload/storage_tasks/task_{date.today().isoformat()}_ZBZ_LARGE.xlsx'),
                         'Task file should be uploaded')
 
         new_tasks = speibi.RemoteLocation().get_new_tasks()
@@ -320,7 +321,7 @@ class Test_speibiutils(unittest.TestCase):
                         'Task should be done')
 
         sftp.put('./test_data/test_data.xlsx',
-                 f'./sbkzbz/upload/task_{date.today().isoformat()}_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_LARGE_RESTART.xlsx')
+                 f'./sbkzbz/upload/storage_tasks/task_{date.today().isoformat()}_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_LARGE_RESTART.xlsx')
 
         new_tasks = speibi.RemoteLocation().get_new_tasks()
         for new_task_path in new_tasks:
