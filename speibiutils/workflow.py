@@ -39,7 +39,9 @@ def start(size: str) -> None:
     if next_task is None:
         logging.warning('No task to process')
         return
-    next_task = task_summary.update_task_state(next_task, new_state='PROCESSING')
+    next_task = task_summary.update_task_state(next_task,
+                                               new_state='PROCESSING',
+                                               parameters={'Start_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
     task_summary.save()
     logging.info(f'Next task: {next_task.get_name()} => process will start now')
     process_task(next_task)
