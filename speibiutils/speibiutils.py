@@ -1064,9 +1064,9 @@ class NewTask:
                 # Suppress matching tasks with error state
                 if directory.endswith('_ERROR'):
                     sftp.rmtree(f'{self.get_directory()}/download/storage_tasks/{directory}')
-
-                logging.error(f'{self.get_task_name()} already exists')
-                return
+                else:
+                    logging.error(f'{self.get_task_name()} already exists')
+                    return
 
         sftp.mkdir(f'{self.get_directory()}/download/storage_tasks/{self.get_task_name(state="NEW")}')
 

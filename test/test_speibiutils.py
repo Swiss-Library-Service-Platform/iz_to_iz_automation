@@ -333,6 +333,31 @@ class Test_speibiutils(unittest.TestCase):
         self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{(date.today() + timedelta(days=2)).isoformat()}_ZBZ_SMALL_READY'),
                         'Task should be ready')
 
+    def test_new_task_3(self):
+        sftp.put('./test_data/test_data_bad1.xlsx',
+                 f'./sbkzbz/upload/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL.xlsx')
+        self.assertTrue(sftp.is_file(f'./sbkzbz/upload/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL.xlsx'),
+                        'Task file should be uploaded')
+
+        new_tasks = speibi.RemoteLocation().get_new_tasks()
+        for new_task_path in new_tasks:
+            speibi.NewTask(new_task_path)
+
+        workflow.start('SMALL')
+
+        self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL_ERROR'),
+                        'Task should in ERROR state')
+
+        sftp.put('./test_data/test_data.xlsx',
+                 f'./sbkzbz/upload/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL.xlsx')
+
+        # new_tasks = speibi.RemoteLocation().get_new_tasks()
+        # for new_task_path in new_tasks:
+        #     speibi.NewTask(new_task_path)
+
+        workflow.start('SMAll')
+        self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL_READY'),
+                        'Task should be ready')
 
     @classmethod
     def tearDownClass(cls):
