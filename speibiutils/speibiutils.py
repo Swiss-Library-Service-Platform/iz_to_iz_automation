@@ -999,6 +999,11 @@ class NewTask:
 
     def get_task_name(self, state: Optional[str] = None) -> str:
         """Get the name of a task
+
+        Parameters
+        ----------
+        state : str
+            State of the task, useful to create path of the tasks
         """
 
         m = re.match(r'^sbk\w+/upload/storage_tasks/(task_\d{4}-\d{2}-\d{2}_.*_(?:SMALL|LARGE))(?:_DELETE|_RESTART)?\.xlsx$',
@@ -1021,7 +1026,7 @@ class NewTask:
 
     @sftp_connect
     def restart_task(self, sftp: sftpmodule.SFTP) -> None:
-        """Delete a task
+        """Restart a task
         """
         m = re.match(r'^sbk\w+/upload/storage_tasks/task_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})(.*)_(SMALL|LARGE)_RESTART\.xlsx$',
                      self.form_path)
@@ -1055,6 +1060,11 @@ class NewTask:
         """
         for directory in sftp.listdir(f'{self.get_directory()}/download/storage_tasks/'):
             if self.get_task_name() in directory:
+
+                # Suppress matching tasks with error state
+                if directory.endswith('_ERROR'):
+                    sftp.rmtree(f'{self.get_directory()}/download/storage_tasks/{directory}')
+
                 logging.error(f'{self.get_task_name()} already exists')
                 return
 

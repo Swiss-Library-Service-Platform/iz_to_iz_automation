@@ -1,4 +1,0 @@
-*** Checking Excel form conformity ***
-Excel file found: task_2024-07-19_ZBZ_SMALL.xlsx
-Version of Excel form supported: v1.0
-Barcodes {'A1001180331', 'DSV0319573', 'DSV031957311', '12223132131-test', 'A1001180332'} already in other tasks
