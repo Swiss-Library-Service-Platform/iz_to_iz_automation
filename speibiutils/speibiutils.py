@@ -540,7 +540,13 @@ class TaskSummary:
         -------
         None
         """
-        self.tasks = pd.read_excel('data/task_summary.xlsx', dtype=str).fillna('')
+        if os.path.exists('data/task_summary.xlsx') is False:
+            logging.error('No task summary found')
+            columns = ['Account', 'Directory', 'Check_time', 'Start_time', 'End_time',
+                       'Scheduled_date', 'Size', 'State', 'Message']
+            self.tasks = pd.DataFrame(columns=columns)
+        else:
+            self.tasks = pd.read_excel('data/task_summary.xlsx', dtype=str).fillna('')
 
     @sftp_connect
     def update_task_state(self,
@@ -812,7 +818,7 @@ class TaskSummary:
                 continue
 
             self.tasks.loc[task.get_directory()] = task_parameters
-            # logging.info(f'New task found: {remote_directory}')
+            logging.info(f'{task.get_directory()}: New task found and added to the task summary')
 
         self.save()
 

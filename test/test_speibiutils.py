@@ -351,13 +351,11 @@ class Test_speibiutils(unittest.TestCase):
         sftp.put('./test_data/test_data.xlsx',
                  f'./sbkzbz/upload/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL.xlsx')
 
-        # new_tasks = speibi.RemoteLocation().get_new_tasks()
-        # for new_task_path in new_tasks:
-        #     speibi.NewTask(new_task_path)
-
         workflow.start('SMAll')
         self.assertTrue(sftp.is_dir(f'./sbkzbz/download/storage_tasks/task_{(date.today() + timedelta(days=5)).isoformat()}_ZBZ3_SMALL_READY'),
                         'Task should be ready')
+
+        tasks = speibi.TaskSummary().get_directories()
 
     @classmethod
     def tearDownClass(cls):
