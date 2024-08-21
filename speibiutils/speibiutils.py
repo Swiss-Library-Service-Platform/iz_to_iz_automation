@@ -396,7 +396,7 @@ class Task:
             logging.error(error_message)
             messages.append(error_message)
             return False, [], messages
-        elif size == 'LARGE' and len(barcodes) > MAX_BARCODES_SMALL:
+        elif size == 'SMALL' and len(barcodes) > MAX_BARCODES_SMALL:
             error_message = f'Too many barcodes ({len(barcodes)}), maximum is {MAX_BARCODES_SMALL}.'
             logging.error(error_message)
             messages.append(error_message)
