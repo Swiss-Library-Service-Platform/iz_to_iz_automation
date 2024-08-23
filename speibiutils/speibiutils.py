@@ -1145,6 +1145,9 @@ class RemoteLocation:
                 if NewTask.is_valid_form_path(f'{account_directory}/upload/storage_tasks/{entry}'):
                     new_tasks.append(f'{account_directory}/upload/storage_tasks/{entry}')
 
+        new_tasks = sorted(new_tasks,
+                           key=lambda f_name: 0 if f_name.endswith('_DELETE.xlsx') else 1)
+
         return new_tasks
 
 

@@ -1,0 +1,21 @@
+<holding>
+  <holding_id>2232994330005525</holding_id>
+  <created_by>exl_api</created_by>
+  <created_date>2024-08-23Z</created_date>
+  <last_modified_by>exl_api</last_modified_by>
+  <last_modified_date>2024-08-23Z</last_modified_date>
+  <originating_system>41SLSP_RRO</originating_system>
+  <originating_system_id>2232994330005525</originating_system_id>
+  <suppress_from_publishing>false</suppress_from_publishing>
+  <calculated_suppress_from_publishing>false</calculated_suppress_from_publishing>
+  <record>
+    <leader>00150nx  a22000611i 4500</leader>
+    <controlfield tag="008">2010282u    8   4001uueng0000000</controlfield>
+    <controlfield tag="005">20240823172504.0</controlfield>
+    <datafield ind1="4" ind2=" " tag="852">
+      <subfield code="b">rro_fili</subfield>
+      <subfield code="c">610940001</subfield>
+      <subfield code="j">UBH Pb 17980</subfield>
+    </datafield>
+  </record>
+</holding>
