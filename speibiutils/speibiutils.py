@@ -1079,6 +1079,7 @@ class NewTask:
         sftp.rename(self.form_path,
                     f'{self.get_directory()}/download/storage_tasks/'
                     f'{self.get_task_name(state="NEW")}/{self.get_form_name()}')
+        logging.info(f'{self.get_task_name()} copied in download folder')
 
 
 class RemoteLocation:
