@@ -348,7 +348,7 @@ class Task:
 
         if wb.sheetnames != ['General', 'Items', 'Locations_mapping', 'Item_policies_mapping', 'data_validation']:
             error_message = (f"Bad or missing sheet names, must be ['General', 'Items', 'Locations_mapping', "
-                             f"'Item_policies_mapping', 'data_validation']")
+                             f"'Item_policies_mapping', 'data_validation'] it was {wb.sheetnames}")
             logging.error(error_message)
             messages.append(error_message)
             return False, [], messages

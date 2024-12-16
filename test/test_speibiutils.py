@@ -230,9 +230,8 @@ class Test_speibiutils(unittest.TestCase):
                     'data/sbkrzs/download/storage_tasks/task_2055-01-01_RZS_LARGE_NEW/task_2055-01-01_RZS_LARGE.xlsx')
 
         result, barcodes, messages = task.check_form_file()
-
         self.assertTrue(
-            "Bad or missing sheet names, must be ['General', 'Items', 'Locations_mapping', 'Item_policies_mapping', 'data_validation']" in messages,
+            "Bad or missing sheet names, must be ['General', 'Items', 'Locations_mapping', 'Item_policies_mapping', 'data_validation'] it was ['BAD', 'Items', 'Locations_mapping', 'Item_policies_mapping', 'data_validation']" in messages,
             'Error message not found (tabs error)')
         self.assertTrue(len(barcodes) == 0, 'Barcodes should be empty')
 
