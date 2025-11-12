@@ -366,15 +366,15 @@ class Task:
 
         ws = wb['General']
 
-        # iz_s = ws.cell(row=3, column=2).value
+        iz_s = ws.cell(row=3, column=2).value
         iz_d = ws.cell(row=4, column=2).value
         env = {'Production': 'P',
                'Sandbox': 'S'}.get(ws.cell(row=5, column=2).value, 'P')
 
         size = self.get_parameters()['Size']
 
-        if iz_d != 'VKSS' and env == 'P':
-            error_message = f'Destination IZ "{iz_d}" selected, only IZ VKSS is allowed with automation.'
+        if iz_d != 'VKSS' and env == 'P' and iz_s != 'VKSS':
+            error_message = f'Destination IZ "{iz_d}" and source IZ "{iz_s}" selected, one of them must be "VKSS" in prod environment.'
             logging.error(error_message)
             messages.append(error_message)
             return False, [], messages
