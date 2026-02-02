@@ -17,3 +17,6 @@ from speibiutils.workflow import start
 
 if sys.argv[1] == '-size' and sys.argv[2] in ['SMALL', 'LARGE']:
     start(size=sys.argv[2])
+else:
+    print('Usage: python start_process.py -size [SMALL|LARGE]')
+    sys.exit(1)
