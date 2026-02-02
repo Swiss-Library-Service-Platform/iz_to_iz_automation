@@ -8,6 +8,9 @@
 
 import sys
 import os
+import dotenv
+dotenv.load_dotenv()
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from speibiutils.workflow import start

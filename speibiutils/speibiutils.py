@@ -17,6 +17,7 @@ STATES = ['NEW', 'READY', 'ERROR', 'PROCESSING', 'DONE']
 # Possible sizes of a task
 SIZE = ['SMALL', 'LARGE']
 
+dotenv.load_dotenv()
 
 def sftp_connect(fn: Callable) -> Callable:
     """Decorator to connect to the SFTP server
@@ -49,7 +50,6 @@ def sftp_connect(fn: Callable) -> Callable:
             Result of the function
 
         """
-        dotenv.load_dotenv()
         host = os.getenv('SFTP_HOST')
         user = os.getenv('SFTP_USER')
         password = os.getenv('SFTP_PASSWORD')
