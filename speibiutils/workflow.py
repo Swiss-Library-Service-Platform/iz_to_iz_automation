@@ -61,7 +61,7 @@ def start(size: str) -> None:
     speibi.LogFile.close_log()
 
     return {'DATE': date.today().isoformat(),
-            'SUCCESS': 0,
+            'SUCCESS': 1,
             'FAILED': 0,
             'TIMESTAMP': datetime.now()}
 
