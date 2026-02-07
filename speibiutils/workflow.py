@@ -1,6 +1,6 @@
 import speibiutils.speibiutils as speibi
 import logging
-from datetime import datetime
+from datetime import datetime, date
 import speibiutils.transferprocess as tp
 
 
@@ -22,7 +22,7 @@ def start(size: str) -> None:
 
     Returns
     -------
-    None
+    dict: A dictionary containing the date, success, failed and timestamp of the process
     """
     speibi.LogFile()
     speibi.TaskSummary.clean_local_directories()
@@ -34,11 +34,17 @@ def start(size: str) -> None:
     task_summary = speibi.TaskSummary()
     if task_summary.get_processing_task() is not None:
         logging.warning('Processing task already exists')
-        return
+        return {'DATE': date.today().isoformat(),
+                'SUCCESS': 0,
+                'FAILED': 1,
+                'TIMESTAMP': datetime.now()}
     next_task = task_summary.get_next_task(size=size)
     if next_task is None:
         logging.warning('No task to process')
-        return
+        return {'DATE': date.today().isoformat(),
+                'SUCCESS': 0,
+                'FAILED': 0,
+                'TIMESTAMP': datetime.now()}
     next_task = task_summary.update_task_state(next_task,
                                                new_state='PROCESSING',
                                                parameters={'Start_time': datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
@@ -54,6 +60,10 @@ def start(size: str) -> None:
 
     speibi.LogFile.close_log()
 
+    return {'DATE': date.today().isoformat(),
+            'SUCCESS': 0,
+            'FAILED': 0,
+            'TIMESTAMP': datetime.now()}
 
 def process_task(task: speibi.Task) -> None:
     """Process a task
